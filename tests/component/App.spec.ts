@@ -40,6 +40,22 @@ describe('App', () => {
     await wrapper.get('form').trigger('submit.prevent')
 
     expect(wrapper.text()).toContain('Buy milk')
+    expect(wrapper.text()).toContain('powered by Arguslog.org')
     expect(wrapper.text()).not.toContain('Something went wrong.')
+  })
+
+  it('renders the app attribution in the empty state', () => {
+    const wrapper = mount(App, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          ArguslogErrorBoundary: {
+            template: '<div><slot /></div>',
+          },
+        },
+      },
+    })
+
+    expect(wrapper.text()).toContain('powered by Arguslog.org')
   })
 })

@@ -40,7 +40,15 @@ describe('App', () => {
     await wrapper.get('form').trigger('submit.prevent')
 
     expect(wrapper.text()).toContain('Buy milk')
-    expect(wrapper.text()).toContain('powered by Arguslog.org')
+    const attributionLink = wrapper.get('.app-attribution__link')
+
+    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe('powered by')
+    expect(attributionLink.get('.app-attribution__brand').text()).toBe('Arguslog.org')
+    expect(attributionLink.attributes()).toMatchObject({
+      href: 'https://arguslog.org',
+      rel: 'noopener noreferrer',
+      target: '_blank',
+    })
     expect(wrapper.text()).not.toContain('Something went wrong.')
   })
 
@@ -56,6 +64,10 @@ describe('App', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('powered by Arguslog.org')
+    const attributionLink = wrapper.get('.app-attribution__link')
+
+    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe('powered by')
+    expect(attributionLink.get('.app-attribution__brand').text()).toBe('Arguslog.org')
+    expect(attributionLink.attributes('href')).toBe('https://arguslog.org')
   })
 })

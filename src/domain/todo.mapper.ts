@@ -7,11 +7,6 @@ import type { Todo } from './todo.types'
 export const createTodo = (title: string): Todo => {
   const now = getCurrentIsoDate()
 
-  // eslint-disable-next-line no-unassigned-vars
-  let foo;
-  // @ts-expect-error intentional runtime error trigger for Arguslog testing
-  console.log("Trigger an error",foo.id)
-
   return {
     id: createTodoId(),
     title: normalizeTodoTitle(title),

@@ -8,9 +8,13 @@
   --color-accent: #2563eb;
   --color-accent-soft: #dbeafe;
   --color-accent-strong: #1d4ed8;
+  --color-attribution-surface: #eff6ff;
+  --color-attribution-border: #bfdbfe;
   --color-danger: #b42318;
   --color-warning: #d97706;
   --color-warning-strong: #9a3412;
   --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --shadow-attribution: 0 10px 24px rgba(37, 99, 235, 0.14);
+  --shadow-attribution-hover: 0 18px 30px rgba(37, 99, 235, 0.2);
   --radius-md: 0.875rem;
 }

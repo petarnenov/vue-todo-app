@@ -15,13 +15,21 @@ describe('App', () => {
     vi.restoreAllMocks()
     vi.spyOn(todoStorage, 'read').mockReturnValue({ ok: true, data: [] })
     vi.spyOn(todoStorage, 'write').mockReturnValue({ ok: true })
-    vi.spyOn(todoTelemetry, 'trackCreateAttempt').mockImplementation(() => undefined)
-    vi.spyOn(todoTelemetry, 'trackCreateSuccess').mockImplementation(() => undefined)
-    vi.spyOn(todoTelemetry, 'trackCreateFailure').mockImplementation(() => undefined)
-    vi.spyOn(todoTelemetry, 'trackCreateUnexpectedFailure').mockImplementation(() => undefined)
-    vi
-      .spyOn(globalThis.crypto, 'randomUUID')
-      .mockReturnValue('123e4567-e89b-12d3-a456-426614174000')
+    vi.spyOn(todoTelemetry, 'trackCreateAttempt').mockImplementation(
+      () => undefined,
+    )
+    vi.spyOn(todoTelemetry, 'trackCreateSuccess').mockImplementation(
+      () => undefined,
+    )
+    vi.spyOn(todoTelemetry, 'trackCreateFailure').mockImplementation(
+      () => undefined,
+    )
+    vi.spyOn(todoTelemetry, 'trackCreateUnexpectedFailure').mockImplementation(
+      () => undefined,
+    )
+    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+      '123e4567-e89b-12d3-a456-426614174000',
+    )
   })
 
   it('adds a todo on submit without rendering the global fallback', async () => {
@@ -40,15 +48,21 @@ describe('App', () => {
     await wrapper.get('form').trigger('submit.prevent')
 
     expect(wrapper.text()).toContain('Buy milk')
-    const attributionLink = wrapper.get('.app-attribution__link')
+    const attributionFooter = wrapper.get('.app-card__footer')
+    const attributionLink = attributionFooter.get('.app-attribution__link')
 
-    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe('powered by')
-    expect(attributionLink.get('.app-attribution__brand').text()).toBe('Arguslog.org')
+    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe(
+      'powered by',
+    )
+    expect(attributionLink.get('.app-attribution__brand').text()).toBe(
+      'Arguslog.org',
+    )
     expect(attributionLink.attributes()).toMatchObject({
       href: 'https://arguslog.org',
       rel: 'noopener noreferrer',
       target: '_blank',
     })
+    expect(wrapper.findAll('.app-card__footer')).toHaveLength(1)
     expect(wrapper.text()).not.toContain('Something went wrong.')
   })
 
@@ -64,10 +78,16 @@ describe('App', () => {
       },
     })
 
-    const attributionLink = wrapper.get('.app-attribution__link')
+    const attributionFooter = wrapper.get('.app-card__footer')
+    const attributionLink = attributionFooter.get('.app-attribution__link')
 
-    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe('powered by')
-    expect(attributionLink.get('.app-attribution__brand').text()).toBe('Arguslog.org')
+    expect(attributionLink.get('.app-attribution__eyebrow').text()).toBe(
+      'powered by',
+    )
+    expect(attributionLink.get('.app-attribution__brand').text()).toBe(
+      'Arguslog.org',
+    )
     expect(attributionLink.attributes('href')).toBe('https://arguslog.org')
+    expect(wrapper.findAll('.app-card__footer')).toHaveLength(1)
   })
 })

@@ -15,8 +15,17 @@ import { TODO_TITLE_MAX_LENGTH } from '@/domain/todo.constants'
 import { useTodoStore } from '@/stores/todoStore'
 
 const todoStore = useTodoStore()
-const { activeCount, completedCount, errorMessage, errorTone, filter, filteredTodos, hasCompleted, isEmpty, isHydrated } =
-  storeToRefs(todoStore)
+const {
+  activeCount,
+  completedCount,
+  errorMessage,
+  errorTone,
+  filter,
+  filteredTodos,
+  hasCompleted,
+  isEmpty,
+  isHydrated,
+} = storeToRefs(todoStore)
 
 const createTodoError = ref<string | null>(null)
 
@@ -25,7 +34,8 @@ const showTodoContent = computed(() => isHydrated.value && !isEmpty.value)
 const handleCreateTodo = (title: string): void => {
   const result = todoStore.addTodo(title)
 
-  createTodoError.value = result.kind === 'validation' ? result.message ?? null : null
+  createTodoError.value =
+    result.kind === 'validation' ? (result.message ?? null) : null
 }
 
 const handleUpdateTodo = (todoId: string, title: string): void => {
@@ -99,7 +109,9 @@ onMounted(() => {
           No todos match the selected filter.
         </p>
 
-        <AppAttribution />
+        <footer class="app-card__footer">
+          <AppAttribution />
+        </footer>
       </section>
     </main>
   </ArguslogErrorBoundary>
@@ -120,6 +132,11 @@ onMounted(() => {
   display: grid;
   gap: 1.5rem;
   padding: clamp(1.25rem, 2vw, 2rem);
+}
+
+.app-card__footer {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .todo-panel {

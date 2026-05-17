@@ -171,9 +171,6 @@ export const useTodoStore = defineStore('todo', () => {
 
   const setFilter = (nextFilter: TodoFilter): void => {
     filter.value = nextFilter
-    //@ts-expect-error Runtime-injected global is not declared in the Window type.
-    const john = window.family.name
-    console.log(john)
   }
 
   return {

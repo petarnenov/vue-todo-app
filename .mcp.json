@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "arguslog": {
+      "type": "http",
+      "url": "https://mcp.arguslog.org/mcp",
+      "headers": {
+        "Authorization": "Bearer arglog_pat_EvA3EZ80_fGen3VglTQfAiHAvz2qK0vlNnRXpk9HahPVa7dLZ19PZJD8H"
+      }
+    }
+  }
+}

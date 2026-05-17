@@ -1,0 +1,41 @@
+{
+  "name": "vue-todo-app",
+  "version": "1.0.0",
+  "description": "Super basic Vue todo app",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@arguslog/sdk-vue": "2.0.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.8.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/coverage-v8": "^4.1.6",
+    "@vue/eslint-config-typescript": "^14.7.0",
+    "@vue/test-utils": "^2.4.10",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.9.1",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.13",
+    "vitest": "^4.1.6",
+    "vue-tsc": "^3.2.9"
+  }
+}

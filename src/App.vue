@@ -3,6 +3,7 @@ import { computed, h, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ArguslogErrorBoundary } from '@arguslog/sdk-vue'
 
+import AppAttribution from '@/components/AppAttribution.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import InlineMessage from '@/components/InlineMessage.vue'
@@ -97,6 +98,8 @@ onMounted(() => {
         >
           No todos match the selected filter.
         </p>
+
+        <AppAttribution />
       </section>
     </main>
   </ArguslogErrorBoundary>

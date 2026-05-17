@@ -6,6 +6,7 @@ import { createTodo, toggleTodoCompletion, updateTodoTitle } from '@/domain/todo
 import { getActiveCount, getCompletedCount, getFilteredTodos, hasCompletedTodos } from '@/domain/todo.selectors'
 import type { Todo, TodoActionResult, TodoFilter } from '@/domain/todo.types'
 import { validateTodoTitle } from '@/domain/todo.validators'
+import { todoTelemetry } from '@/services/telemetry'
 import { todoStorage } from '@/services/todoStorage'
 
 export type InlineMessageTone = 'error' | 'warning'
@@ -36,15 +37,19 @@ export const useTodoStore = defineStore('todo', () => {
     errorTone.value = null
   }
 
-  const persistTodos = (): void => {
+  const persistTodos = (): { ok: boolean; message?: string } => {
     const result = todoStorage.write(todos.value)
 
     if (!result.ok) {
       setStorageMessage(result.message ?? TODO_VALIDATION_MESSAGES.writeFailed, 'warning')
-      return
+      return {
+        ok: false,
+        message: result.message ?? TODO_VALIDATION_MESSAGES.writeFailed,
+      }
     }
 
     clearStorageMessage()
+    return { ok: true }
   }
 
   const hydrate = (): void => {
@@ -63,17 +68,51 @@ export const useTodoStore = defineStore('todo', () => {
   }
 
   const addTodo = (title: string): TodoActionResult => {
+    const normalizedTitleLength = title.trim().length
+
+    todoTelemetry.trackCreateAttempt({ titleLength: normalizedTitleLength })
+
     const validationResult = validateTodoTitle(title)
 
     if (!validationResult.ok || !validationResult.value) {
+      todoTelemetry.trackCreateFailure('validation', { titleLength: normalizedTitleLength })
+
       return {
         ok: false,
         message: validationResult.message,
+        kind: 'validation',
       }
     }
 
-    todos.value = [createTodo(validationResult.value), ...todos.value]
-    persistTodos()
+    try {
+      todos.value = [createTodo(validationResult.value), ...todos.value]
+    } catch (error) {
+      todoTelemetry.trackCreateUnexpectedFailure(error, {
+        titleLength: validationResult.value.length,
+        totalTodos: todos.value.length,
+      })
+      throw error
+    }
+
+    const persistenceResult = persistTodos()
+
+    if (!persistenceResult.ok) {
+      todoTelemetry.trackCreateFailure('persistence', {
+        titleLength: validationResult.value.length,
+        totalTodos: todos.value.length,
+      })
+
+      return {
+        ok: true,
+        message: persistenceResult.message,
+        kind: 'persistence',
+      }
+    }
+
+    todoTelemetry.trackCreateSuccess({
+      titleLength: validationResult.value.length,
+      totalTodos: todos.value.length,
+    })
 
     return { ok: true }
   }

@@ -1,0 +1,65 @@
+name: Notify Slack for PRs to main
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+
+jobs:
+  notify-slack:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ -z "${SLACK_WEBHOOK_URL}" ]; then
+            echo "SLACK_WEBHOOK_URL is not configured"
+            exit 1
+          fi
+
+          payload=$(jq -n \
+            --arg repository "$REPOSITORY" \
+            --arg title "$PR_TITLE" \
+            --arg url "$PR_URL" \
+            --arg author "$PR_AUTHOR" \
+            --arg number "$PR_NUMBER" \
+            --arg base "$PR_BASE" \
+            --arg head "$PR_HEAD" \
+            '{
+              text: ("New PR to main in " + $repository),
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: ("*New PR to `main` in `" + $repository + "`*")
+                  }
+                },
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: ("*#" + $number + "* <" + $url + "|" + $title + ">\n*Author:* " + $author + "\n*Branch:* `" + $head + "` -> `" + $base + "`")
+                  }
+                }
+              ]
+            }')
+
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Content-Type: application/json" \
+            --data "$payload" \
+            "$SLACK_WEBHOOK_URL"

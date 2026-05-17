@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import { TODO_VALIDATION_MESSAGES } from '@/domain/todo.constants'
+import { normalizeTodoTitle } from '@/domain/todo.validators'
+
 const props = defineProps<{
   errorMessage?: string | null
   maxLength: number
@@ -17,10 +20,10 @@ const localError = ref<string | null>(null)
 const resolvedErrorMessage = computed(() => localError.value ?? props.errorMessage ?? null)
 
 const handleSubmit = (): void => {
-  const normalizedTitle = title.value.trim()
+  const normalizedTitle = normalizeTodoTitle(title.value)
 
   if (!normalizedTitle) {
-    localError.value = 'Please enter a todo title.'
+    localError.value = TODO_VALIDATION_MESSAGES.emptyTitle
     return
   }
 

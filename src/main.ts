@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
-import { createArguslog } from '@arguslog/sdk-vue'
 
 import App from './App.vue'
+import { installArguslog } from './arguslog'
 import { pinia } from './app/providers/pinia'
 import './styles/tokens.css'
 import './styles/base.css'
@@ -9,11 +9,5 @@ import './styles/base.css'
 const app = createApp(App)
 
 app.use(pinia)
-app.use(
-  createArguslog({
-    dsn: 'arguslog://IF4TWQD35UU5TKLGCCIMBYAHSFIMSVYN@ingest.arguslog.org/api/29',
-    environment: 'production',
-    integrations: ['globalHandlers', 'autoBreadcrumbs'],
-  }),
-)
+installArguslog(app)
 app.mount('#app')

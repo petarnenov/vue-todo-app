@@ -2,12 +2,17 @@ import { setActivePinia, createPinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useTodoStore } from '@/stores/todoStore'
+import { todoTelemetry } from '@/services/telemetry'
 import { todoStorage } from '@/services/todoStorage'
 
 describe('useTodoStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.restoreAllMocks()
+    vi.spyOn(todoTelemetry, 'trackCreateAttempt').mockImplementation(() => undefined)
+    vi.spyOn(todoTelemetry, 'trackCreateSuccess').mockImplementation(() => undefined)
+    vi.spyOn(todoTelemetry, 'trackCreateFailure').mockImplementation(() => undefined)
+    vi.spyOn(todoTelemetry, 'trackCreateUnexpectedFailure').mockImplementation(() => undefined)
   })
 
   it('hydrates todos from storage', () => {
@@ -69,11 +74,32 @@ describe('useTodoStore', () => {
 
     const store = useTodoStore()
     store.hydrate()
-    store.addTodo('Draft change')
+    const result = store.addTodo('Draft change')
 
+    expect(result).toEqual({
+      ok: true,
+      kind: 'persistence',
+      message: 'Changes are visible, but could not be saved locally.',
+    })
     expect(store.todos).toHaveLength(1)
     expect(store.errorTone).toBe('warning')
     expect(store.errorMessage).toContain('could not be saved')
+  })
+
+  it('returns typed validation failures without changing state', () => {
+    vi.spyOn(todoStorage, 'read').mockReturnValue({ ok: true, data: [] })
+
+    const store = useTodoStore()
+    store.hydrate()
+
+    const result = store.addTodo('   ')
+
+    expect(result).toEqual({
+      ok: false,
+      kind: 'validation',
+      message: 'Please enter a todo title.',
+    })
+    expect(store.todos).toEqual([])
   })
 
   it('filters todos and clears completed entries', () => {

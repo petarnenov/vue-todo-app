@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ArguslogErrorBoundary } from '@arguslog/sdk-vue'
 
@@ -24,7 +24,7 @@ const showTodoContent = computed(() => isHydrated.value && !isEmpty.value)
 const handleCreateTodo = (title: string): void => {
   const result = todoStore.addTodo(title)
 
-  createTodoError.value = result.ok ? null : result.message ?? null
+  createTodoError.value = result.kind === 'validation' ? result.message ?? null : null
 }
 
 const handleUpdateTodo = (todoId: string, title: string): void => {
@@ -35,13 +35,19 @@ const clearCreateError = (): void => {
   createTodoError.value = null
 }
 
+const errorFallback = ({ error, reset }: { error: Error; reset: () => void }) =>
+  h('div', { class: 'error-state' }, [
+    h('p', `Something went wrong: ${error.message}`),
+    h('button', { class: 'error-action', onClick: reset }, 'Try again'),
+  ])
+
 onMounted(() => {
   todoStore.hydrate()
 })
 </script>
 
 <template>
-  <ArguslogErrorBoundary fallback="Something went wrong.">
+  <ArguslogErrorBoundary :fallback="errorFallback">
     <main class="app-shell">
       <section class="app-card">
         <AppHeader />
@@ -116,6 +122,28 @@ onMounted(() => {
 .todo-panel {
   display: grid;
   gap: 1.25rem;
+}
+
+.error-state {
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+}
+
+.error-state p {
+  color: var(--color-text);
+  margin: 0;
+}
+
+.error-action {
+  background: var(--color-accent, var(--color-text));
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-surface);
+  cursor: pointer;
+  font: inherit;
+  justify-self: center;
+  padding: 0.75rem 1.25rem;
 }
 
 .loading-message,

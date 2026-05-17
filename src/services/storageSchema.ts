@@ -1,12 +1,7 @@
 import { appConfig } from '@/config/appConfig'
 import { TODO_VALIDATION_MESSAGES } from '@/domain/todo.constants'
 import { validateTodoEntity } from '@/domain/todo.validators'
-import type { Todo } from '@/domain/todo.types'
-
-interface TodoStoragePayload {
-  version: number
-  todos: Todo[]
-}
+import type { Todo, TodoStoragePayload } from '@/domain/todo.types'
 
 interface SchemaResult {
   ok: boolean

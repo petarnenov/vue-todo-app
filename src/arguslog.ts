@@ -1,5 +1,10 @@
 import type { App as VueApp } from 'vue'
 import { createArguslog } from '@arguslog/sdk-vue'
+import type { EventPayload } from '@arguslog/sdk-browser'
+
+const ARGUSLOG_CONNECTIVITY_PROBE_PREFIX = 'ArguslogConnectivityProbe:'
+const filterConnectivityProbeEvent = (event: EventPayload): EventPayload | null =>
+  event.message?.startsWith(ARGUSLOG_CONNECTIVITY_PROBE_PREFIX) ? null : event
 
 /**
  * Install Arguslog into the Vue app. Reads the DSN from VITE_ARGUSLOG_DSN at build
@@ -16,6 +21,7 @@ export function installArguslog(app: VueApp): void {
       environment: import.meta.env.MODE,
       release: import.meta.env.VITE_APP_RELEASE,
       integrations: ['globalHandlers', 'autoBreadcrumbs'],
+      beforeSend: filterConnectivityProbeEvent,
     }),
   )
 }

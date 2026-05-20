@@ -1,6 +1,8 @@
 import type { App as VueApp } from 'vue'
 import { createArguslog } from '@arguslog/sdk-vue'
 
+const ARGUSLOG_CONNECTIVITY_PROBE_PREFIX = 'ArguslogConnectivityProbe:'
+
 /**
  * Install Arguslog into the Vue app. Reads the DSN from VITE_ARGUSLOG_DSN at build
  * time. If the variable is missing (local dev without keys), the installer is a
@@ -16,6 +18,10 @@ export function installArguslog(app: VueApp): void {
       environment: import.meta.env.MODE,
       release: import.meta.env.VITE_APP_RELEASE,
       integrations: ['globalHandlers', 'autoBreadcrumbs'],
+      beforeSend: (event) =>
+        event.message?.startsWith(ARGUSLOG_CONNECTIVITY_PROBE_PREFIX)
+          ? null
+          : event,
     }),
   )
 }

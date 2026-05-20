@@ -38,6 +38,12 @@ describe('installArguslog', () => {
     const regularEvent = { message: 'action=create_todo status=failure' }
     expect(config.beforeSend(regularEvent)).toBe(regularEvent)
 
+    const eventWithoutMessage = {}
+    expect(config.beforeSend(eventWithoutMessage)).toBe(eventWithoutMessage)
+
+    const eventWithEmptyMessage = { message: '' }
+    expect(config.beforeSend(eventWithEmptyMessage)).toBe(eventWithEmptyMessage)
+
     env.VITE_ARGUSLOG_DSN = previousDsn
   })
 })
